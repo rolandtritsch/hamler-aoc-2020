@@ -1,0 +1,17 @@
+{-|
+Problem: <https://adventofcode.com/2020/day/0>
+
+Solution:
+
+General - ???
+
+Part 1 - ???
+
+Part 2 - ???
+-}
+module Main where
+
+import Prelude
+
+main :: IO ()
+main = print "Hello, AoC 2020!"

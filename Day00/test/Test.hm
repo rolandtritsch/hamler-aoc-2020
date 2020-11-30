@@ -3,4 +3,4 @@ module Test where
 import Prelude
 
 main :: IO ()
-main = print "test hamler!"
+main = print "Test AoC 2020"

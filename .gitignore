@@ -1,2 +1,3 @@
-/ebin/
-erl_crash.dump
+**/ebin/
+**/.test/
+**/erl_crash.dump
