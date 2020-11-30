@@ -1,2 +1,1 @@
-# hamler-aoc-2020
-Advent of Code 2020 (Hamler Edition)
+# Advent of Code 2020 (Hamler Edition)
