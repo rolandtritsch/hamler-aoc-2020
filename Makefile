@@ -17,3 +17,8 @@ test:
 .PHONY: repl
 repl:
 	@hamler repl
+
+.PHONY: clean
+clean:
+	rm -rf ebin
+
