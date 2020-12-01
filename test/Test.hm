@@ -11,11 +11,13 @@ shouldBe :: String -> String -> Integer -> Boolean
 shouldBe f s _ = f == s
 
 test :: TestGroup (Integer -> IO TestResult)
-test = Exe [ quickCheck1 "Day00: part1: shouldBe right"  (shouldBe D00.part1 "Day00: Solution Part 1")
-           , quickCheck1 "Day00: part2: shouldBe right"  (shouldBe D00.part2 "Day00: Solution Part 2")
-           , quickCheck1 "Day01: part1: shouldBe right"  (shouldBe D01.part1 "Day01: Solution Part 1")
-           , quickCheck1 "Day01: part2: shouldBe right"  (shouldBe D01.part2 "Day01: Solution Part 2")
+test = Exe [ quickCheck1 "Day00: part1: shouldBe right" (shouldBe D00.part1 "Day00: Solution Part 1")
+           , quickCheck1 "Day00: part2: shouldBe right" (shouldBe D00.part2 "Day00: Solution Part 2")
+           , quickCheck1 "Day01: part1: test: shouldBe 514579" (D01.shouldBe D01.part1 (D01.input "./input/Day01p1test.txt") 514579)
+           , quickCheck1 "Day01: part1: shouldBe 858496" (D01.shouldBe D01.part1 (D01.input "./input/Day01p1.txt") 858496)
+           , quickCheck1 "Day01: part2: test: shouldBe 241861950" (D01.shouldBe D01.part2 (D01.input "./input/Day01p1test.txt") 241861950)
+           , quickCheck1 "Day01: part2: shouldBe 263819430"(D01.shouldBe D01.part2 (D01.input "./input/Day01p1.txt") 263819430)
            ]
 
-main ::  IO ()
+main :: IO ()
 main = runTest $ test

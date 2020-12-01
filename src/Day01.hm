@@ -3,16 +3,35 @@ Problem: <https://adventofcode.com/2020/day/1>
 
 Solution:
 
-General - ???
+General - List combination/search problem. Build all combination
+of list elements. And lock for the ones that sum up to be 2020.
 
-Part 1 - ???
+Part 1 - Do it with pairs.
 
-Part 2 - ???
+Part 2 - Do it with triplets. Note: To make the search space small,
+we first search the expenses in reverse order and then stop searching,
+when the first 2 numbers are already bigger than 2020.
 -}
 module Day01 where
 
-part1 :: String
-part1 = "Day01: Solution Part 1"
+import Prelude
 
-part2 :: String
-part2 = "Day01: Solution Part 2"
+import System.IO (readFile)
+import Data.String (lines)
+import Data.Binary (toStr)
+import Data.List (nub)
+
+input :: String -> [Integer]
+input filename = reverse $ sort $ map read $ tail $ reverse $ lines $ toStr $ contents 
+    where contents = unsafePerformIO $ readFile filename
+
+shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
+shouldBe f es n _ = f es == n
+
+part1 :: [Integer] -> Integer
+part1 expenses = x * y where
+    (x, y) = head $ [(x,y) | x <- expenses, y <- expenses, x + y == 2020]
+    
+part2 :: [Integer] -> Integer
+part2 expenses = x * y * z where
+    (x, y, z) = head $ [(x,y,z) | x <- expenses, y <- expenses, x + y <= 2020, z <- expenses, x + y + z == 2020]
