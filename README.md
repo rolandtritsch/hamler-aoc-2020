@@ -6,5 +6,4 @@ To make this work you need to ...
 (through [asdf](https://github.com/asdf-vm/asdf) (or comparable))
 * install [hamler](https://github.com/hamler-lang)
 * clone the repo
-* `cd` into `Day00`
-* run `make clean && make build && make test && make run`
+* run `hamler test`
