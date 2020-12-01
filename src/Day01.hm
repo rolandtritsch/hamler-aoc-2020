@@ -1,0 +1,18 @@
+{-|
+Problem: <https://adventofcode.com/2020/day/1>
+
+Solution:
+
+General - ???
+
+Part 1 - ???
+
+Part 2 - ???
+-}
+module Day01 where
+
+part1 :: String
+part1 = "Day01: Solution Part 1"
+
+part2 :: String
+part2 = "Day01: Solution Part 2"
