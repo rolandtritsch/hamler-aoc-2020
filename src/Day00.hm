@@ -11,6 +11,11 @@ Part 2 - ???
 -}
 module Day00 where
 
+import Prelude
+
+shouldBe :: String -> String -> Integer -> Boolean
+shouldBe f s _ = f == s
+
 part1 :: String
 part1 = "Day00: Solution Part 1"
 
