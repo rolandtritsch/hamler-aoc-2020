@@ -1,0 +1,45 @@
+{-|
+Problem: <https://adventofcode.com/2020/day/2>
+
+Solution:
+
+General - ???
+
+Part 1 - ???
+
+Part 2 - ???
+
+-}
+module Day02 where
+
+import Prelude
+
+import System.IO (readFile)
+import Data.String (lines, words, split)
+import Data.Binary (toStr)
+import Data.List ((!!))
+
+data Password = Password {
+    min :: Integer,
+    max :: Integer,
+    char :: String,
+    password :: String
+    }
+
+input :: String -> [Password]
+input filename = map parse $ tail $ reverse $ lines $ toStr $ contents where
+    contents = unsafePerformIO $ readFile filename
+    parse line = Password {min = min, max = max, char = char, password = password} where
+      min = read $ split (words line !! 0) "-" !! 0
+      max = read $ split (words line !! 0) "-" !! 1
+      char = split (words line !! 0) ":" !! 0
+      password = words line !! 2
+
+shouldBe :: ([Password] -> Integer) -> [Password] -> Integer -> Integer -> Boolean
+shouldBe f ps n _ = f ps == n
+
+part1 :: [Password] -> Integer
+part1 passwords = length passwords
+    
+part2 :: [Password] -> Integer
+part2 passwords = length passwords * 2
