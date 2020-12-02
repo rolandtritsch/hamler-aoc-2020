@@ -39,7 +39,6 @@ shouldBe :: ([Password] -> Integer) -> [Password] -> Integer -> Integer -> Boole
 shouldBe f ps n _ = f ps == n
 
 part1 :: [Password] -> Integer
--- part1 passwords = length passwords
 part1 passwords = length compliant where
     compliant = filter (\pw -> check pw) passwords
     check pw = number >= pw.min && number <= pw.max where
