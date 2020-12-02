@@ -3,21 +3,29 @@ Problem: <https://adventofcode.com/2020/day/0>
 
 Solution:
 
-General - ???
+General - Just a frame work for all other days.
 
-Part 1 - ???
+Part 1 - Sum of all numbers.
 
-Part 2 - ???
+Part 2 - Product of all numbers.
 -}
 module Day00 where
 
 import Prelude
 
-shouldBe :: String -> String -> Integer -> Boolean
-shouldBe f s _ = f == s
+import Data.List (init, sum, product)
+import Data.String (lines)
+import Data.Binary (toStr)
 
-part1 :: String
-part1 = "Day00: Solution Part 1"
+shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
+shouldBe f is n _ = f is == n
 
-part2 :: String
-part2 = "Day00: Solution Part 2"
+input :: String -> [Integer]
+input filename = map read $ init $ lines $ toStr $ contents where
+    contents = unsafePerformIO $ readFile filename
+
+part1 :: [Integer] -> Integer
+part1 is = sum is 
+
+part2 :: [Integer] -> Integer
+part2 is = product is
