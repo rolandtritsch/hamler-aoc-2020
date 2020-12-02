@@ -39,8 +39,8 @@ test = TxG "AoC" [
     TxG "Day02" [
         TxG "Part1" [
             Exe [
-                quickCheck1 "shouldBe 3" (D02.shouldBe D02.part1 (D02.input "./input/Day02p1test.txt") 3),
-                quickCheck1 "shouldBe 1000" (D02.shouldBe D02.part1 (D02.input "./input/Day02p1.txt") 1000)
+                quickCheck1 "shouldBe 2" (D02.shouldBe D02.part1 (D02.input "./input/Day02p1test.txt") 2),
+                quickCheck1 "shouldBe 666" (D02.shouldBe D02.part1 (D02.input "./input/Day02p1.txt") 666)
             ]
          ],
          TxG "Part2" [ 
@@ -54,3 +54,7 @@ test = TxG "AoC" [
 
 main :: IO ()
 main = runTest $ test
+{-
+main = printf "%d" result where
+    result = D02.part1 (D02.input "./input/Day02p1.txt")
+-}
