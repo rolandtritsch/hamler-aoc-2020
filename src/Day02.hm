@@ -46,4 +46,8 @@ part1 passwords = length compliant where
         number = length $ filter (\c -> c == pw.char) pw.password
     
 part2 :: [Password] -> Integer
-part2 passwords = length passwords * 2
+part2 passwords = length compliant where
+    compliant = filter (\pw -> check pw) passwords
+    check pw = (pw.char == pos1 || pw.char == pos2) && pos1 /= pos2 where
+      pos1 = pw.password !! (pw.min - 1)
+      pos2 = pw.password !! (pw.max - 1)
