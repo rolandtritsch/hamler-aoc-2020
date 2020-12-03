@@ -54,12 +54,14 @@ test = TxG "AoC" [
     TxG "Day03" [
         TxG "Part1" [
             Exe [
-                quickCheck1 "shouldBe 15" (D03.shouldBe D03.part1 (D03.input "./input/Day00p1.txt") 15)
+                quickCheck1 "shouldBe 7" (D03.shouldBe D03.part1 (D03.input "./input/Day03p1test.txt") 7),
+                quickCheck1 "shouldBe 195" (D03.shouldBe D03.part1 (D03.input "./input/Day03p1.txt") 195)
             ]
          ],
          TxG "Part2" [ 
             Exe [
-                quickCheck1 "shouldBe 120" (D03.shouldBe D03.part2 (D03.input "./input/Day00p1.txt") 120)
+                quickCheck1 "shouldBe 10" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1test.txt") 10),
+                quickCheck1 "shouldBe 10" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1.txt") 322)
             ]
         ]
     ]
@@ -67,4 +69,3 @@ test = TxG "AoC" [
 
 main :: IO ()
 main = runTest $ test
-
