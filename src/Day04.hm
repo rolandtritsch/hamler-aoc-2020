@@ -1,0 +1,31 @@
+{-|
+Problem: <https://adventofcode.com/2020/day/4>
+
+Solution:
+
+General - ???
+
+Part 1 - ???
+
+Part 2 - ???
+-}
+module Day04 where
+
+import Prelude
+
+import Data.List (init, sum, product)
+import Data.String (lines)
+import Data.Binary (toStr)
+
+shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
+shouldBe f is n _ = f is == n
+
+input :: String -> [Integer]
+input filename = map read $ init $ lines $ toStr $ contents where
+    contents = unsafePerformIO $ readFile filename
+
+part1 :: [Integer] -> Integer
+part1 is = sum is 
+
+part2 :: [Integer] -> Integer
+part2 is = product is

@@ -6,6 +6,7 @@ import Day00 as D00
 import Day01 as D01
 import Day02 as D02
 import Day03 as D03
+import Day04 as D04
 
 import Test.QuickCheck (TestGroup(..), TestResult, quickCheck1, runTest)
 
@@ -62,6 +63,18 @@ test = TxG "AoC" [
             Exe [
                 quickCheck1 "shouldBe 366" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1test.txt") (0,0) 336),
                 quickCheck1 "shouldBe 3772314000" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1.txt") (0,0) 3772314000)
+            ]
+        ]
+    ],
+    TxG "Day04" [
+        TxG "Part1" [
+            Exe [
+                quickCheck1 "shouldBe 15" (D04.shouldBe D04.part1 (D04.input "./input/Day00p1.txt") 15)
+            ]
+         ],
+         TxG "Part2" [ 
+            Exe [
+                quickCheck1 "shouldBe 120" (D04.shouldBe D04.part2 (D04.input "./input/Day00p1.txt") 120)
             ]
         ]
     ]
