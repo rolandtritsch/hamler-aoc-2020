@@ -50,12 +50,12 @@ input filename = {xMax = xMax, yMax = yMax, trees = positions} where
             
 part1 :: Forrest -> (Integer, Integer) -> Integer
 part1 forrest move = length $ collisions where
-    steps = go move (0,0) 0 where
-        go (right, down) (x,y) n
-            | n >= forrest.xMax = []
-            | otherwise =  [(x + down, y + right)] ++ go (right, down) (x + down, y + right) (n + down)
     collisions = filter inForest steps where
         inForest (x,y) = elem (x, y % (forrest.yMax + 1)) forrest.trees
+    steps = go move (0,0) where
+        go (right, down) (x,y)
+            | x >= forrest.xMax = []
+            | otherwise =  [(x + down, y + right)] ++ go (right, down) (x + down, y + right)
 
 part2 :: Forrest -> (Integer, Integer) -> Integer
 part2 forrest _ = product slopes where
