@@ -60,8 +60,8 @@ test = TxG "AoC" [
          ],
          TxG "Part2" [ 
             Exe [
-                quickCheck1 "shouldBe 10" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1test.txt") (0,0) 10),
-                quickCheck1 "shouldBe 10" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1.txt") (0,0) 322)
+                quickCheck1 "shouldBe 366" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1test.txt") (0,0) 336),
+                quickCheck1 "shouldBe 3772314000" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1.txt") (0,0) 3772314000)
             ]
         ]
     ]
