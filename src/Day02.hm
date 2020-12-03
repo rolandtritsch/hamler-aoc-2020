@@ -3,11 +3,11 @@ Problem: <https://adventofcode.com/2020/day/2>
 
 Solution:
 
-General - ???
+General - Main problem was parsing the input file :).
 
-Part 1 - ???
+Part 1 - After you have the data, solving the puzzle becomes easy.
 
-Part 2 - ???
+Part 2 - Implemented xor for that.
 
 -}
 module Day02 where
@@ -38,6 +38,11 @@ input filename = map parse $ tail $ reverse $ lines $ toStr $ contents where
 shouldBe :: ([Password] -> Integer) -> [Password] -> Integer -> Integer -> Boolean
 shouldBe f ps n _ = f ps == n
 
+xor :: Bool -> Bool -> Bool
+xor x y | x == true && y == false = true
+        | x == false && y == true = true
+        | otherwise = false
+
 part1 :: [Password] -> Integer
 part1 passwords = length compliant where
     compliant = filter (\pw -> check pw) passwords
@@ -47,6 +52,6 @@ part1 passwords = length compliant where
 part2 :: [Password] -> Integer
 part2 passwords = length compliant where
     compliant = filter (\pw -> check pw) passwords
-    check pw = (pw.char == pos1 || pw.char == pos2) && pos1 /= pos2 where
+    check pw = xor (pw.char == pos1) (pw.char == pos2) where
       pos1 = pw.password !! (pw.min - 1)
       pos2 = pw.password !! (pw.max - 1)
