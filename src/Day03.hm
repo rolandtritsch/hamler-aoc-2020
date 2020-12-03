@@ -29,8 +29,8 @@ import Data.List (init, (!!), elem)
 import Data.String as S
 import Data.Binary (toStr)
 
-shouldBe :: (Forrest -> Integer) -> Forrest -> Integer -> Integer -> Boolean
-shouldBe f ts n _ = f ts == n
+shouldBe :: (Forrest -> (Integer, Integer) -> Integer) -> Forrest -> (Integer, Integer) -> Integer -> Integer -> Boolean
+shouldBe f ts s n _ = f ts s == n
 
 type Forrest = {
     xMax :: Integer,
@@ -48,11 +48,11 @@ input filename = {xMax = xMax, yMax = yMax, trees = positions} where
         findTrees treeLine = map fst $ filter (\(y, t) -> t == '#') treePositions where
             treePositions = zip [0 .. yMax] treeLine
             
-part1 :: Forrest -> Integer
-part1 forrest = length $ collisions where
-    steps = [(x,y) | x <- [1 .. forrest.xMax], y <- [((x-1) * 3) + 3]] 
+part1 :: Forrest -> (Integer, Integer) -> Integer
+part1 forrest (right, down) = length $ collisions where
+    steps = [(x,y) | x <- [1,(down + 1) .. forrest.xMax], y <- [((x-1) * right) + right]] 
     collisions = filter inForest steps where
         inForest (x,y) = elem (x, y % (forrest.yMax + 1)) forrest.trees
 
-part2 :: Forrest -> Integer
-part2 forrest = forrest.xMax
+part2 :: Forrest -> (Integer, Integer) -> Integer
+part2 forrest _ = forrest.xMax
