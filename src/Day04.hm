@@ -23,7 +23,9 @@ import Prelude
 import Data.List (lookup, (!!))
 import Data.String (join, replace, split, trim)
 import Data.Binary (toStr)
-import Data.Maybe (isJust)
+import Data.Maybe (isJust, fromJust)
+import Data.Result (fromOk)
+import Data.Regex as R
 
 type Passport = {
     birthYear :: Maybe String,
@@ -62,6 +64,75 @@ isValid p = (
     isJust p.passportID
 )
 
+isValid2 :: Passport -> Bool
+isValid2 p = (
+    isValidBirthYear p.birthYear &&        
+    isValidIssueYear p.issueYear &&
+    isValidExpirationYear p.expirationYear &&
+    isValidHeight p.height &&
+    isValidHairColor p.hairColor &&
+    isValidEyeColor p.eyeColor &&
+    isValidPassportID p.passportID
+)
+
+isValidBirthYear :: Maybe String -> Boolean
+isValidBirthYear byr = if isJust byr then check (fromJust byr) else false where
+    p = fromOk $ R.compile "^(\\d{4})$" []
+    check f = if checkFormatted f p then checkValid f p else false where
+      checkValid f' p' = checkValidRange value where
+          value = read $ result !! 0 where
+              result = tail $ R.split f' p' [R.Trim]
+      checkValidRange v = v >= 1920 && v <= 2002
+
+isValidIssueYear :: Maybe String -> Boolean
+isValidIssueYear iyr = if isJust iyr then check (fromJust iyr) else false where
+    p = fromOk $ R.compile "^(\\d{4})$" []
+    check f = if checkFormatted f p then checkValid f p else false where
+      checkValid f' p' = checkValidRange value where
+          value = read $ result !! 0 where
+              result = tail $ R.split f' p' [R.Trim]
+      checkValidRange v = v >= 2010 && v <= 2020
+
+isValidExpirationYear :: Maybe String -> Boolean
+isValidExpirationYear eyr = if isJust eyr then check (fromJust eyr) else false where
+    p = fromOk $ R.compile "^(\\d{4})$" []
+    check f = if checkFormatted f p then checkValid f p else false where
+      checkValid f' p' = checkValidRange value where
+          value = read $ result !! 0 where
+              result = tail $ R.split f' p' [R.Trim]
+      checkValidRange v = v >= 2020 && v <= 2030
+
+isValidHeight :: Maybe String -> Boolean
+isValidHeight hgt = if isJust hgt then check (fromJust hgt) else false where
+    p = fromOk $ R.compile "^(\\d.*)(cm|in)$" []
+    check f = if checkFormatted f p then checkValid f p else false where
+      checkValid f' p' = checkValidRange value unit where
+          (value, unit) = (read $ result !! 0, result !! 1) where
+              result = tail $ R.split f' p' [R.Trim]
+      checkValidRange v "cm" = v >= 150 && v <= 193
+      checkValidRange v "in" = v >= 59 && v <= 76
+      checkValidRange _ _ = false
+
+isValidHairColor :: Maybe String -> Boolean
+isValidHairColor hcl = if isJust hcl then check (fromJust hcl) else false where
+    p = fromOk $ R.compile "^(#[a-f0-9]{6})$" []
+    check f = checkFormatted f p
+
+isValidEyeColor :: Maybe String -> Boolean
+isValidEyeColor ecl = if isJust ecl then check (fromJust ecl) else false where
+    p = fromOk $ R.compile "^(amb|blu|brn|gry|grn|hzl|oth)$" []
+    check f = checkFormatted f p
+
+isValidPassportID :: Maybe String -> Boolean
+isValidPassportID pid = if isJust pid then check (fromJust pid) else false where
+    p = fromOk $ R.compile "^(\\d{9})$" []
+    check f = checkFormatted f p
+
+checkFormatted :: String -> R.Pattern -> Bool
+checkFormatted field pattern = isMatch $ R.run field pattern [] where
+    isMatch (R.Match _) = true
+    isMatch _ = false
+
 input :: String -> [Passport]
 input filename = map makePassport passports where
     contents = toStr $ unsafePerformIO $ readFile filename
@@ -76,4 +147,4 @@ part1 :: [Passport] -> Integer
 part1 ps = length $ filter isValid ps
 
 part2 :: [Passport] -> Integer
-part2 ps = length ps
+part2 ps = length $ filter isValid2 ps
