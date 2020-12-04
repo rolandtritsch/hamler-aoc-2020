@@ -1,0 +1,26 @@
+module Day02Test where
+
+import Prelude
+
+import Test.QuickCheck (TestGroup(..), TestResult, quickCheck1)
+
+import Day02 as D02
+
+shouldBe :: ([D02.Password] -> Integer) -> [D02.Password] -> Integer -> Integer -> Boolean
+shouldBe f ps n _ = f ps == n
+
+test :: TestGroup (Integer -> IO TestResult)
+test = TxG "Day02" [
+    TxG "Part1" [
+        Exe [
+            quickCheck1 "shouldBe 2" (shouldBe D02.part1 (D02.input "./input/Day02p1test.txt") 2),
+            quickCheck1 "shouldBe 666" (shouldBe D02.part1 (D02.input "./input/Day02p1.txt") 666)
+        ]
+    ],
+    TxG "Part2" [ 
+        Exe [
+            quickCheck1 "shouldBe 1" (shouldBe D02.part2 (D02.input "./input/Day02p1test.txt") 1),
+            quickCheck1 "shouldBe 670" (shouldBe D02.part2 (D02.input "./input/Day02p1.txt") 670)
+        ]
+    ]
+]

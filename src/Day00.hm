@@ -17,9 +17,6 @@ import Data.List (init, sum, product)
 import Data.String (lines)
 import Data.Binary (toStr)
 
-shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
-shouldBe f is n _ = f is == n
-
 input :: String -> [Integer]
 input filename = map read $ init $ lines $ toStr $ contents where
     contents = unsafePerformIO $ readFile filename

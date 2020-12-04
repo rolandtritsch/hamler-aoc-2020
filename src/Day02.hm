@@ -35,9 +35,6 @@ input filename = map parse $ tail $ reverse $ lines $ toStr $ contents where
       char = (split (words line !! 1) ":" !! 0) !! 0 
       password = words line !! 2
 
-shouldBe :: ([Password] -> Integer) -> [Password] -> Integer -> Integer -> Boolean
-shouldBe f ps n _ = f ps == n
-
 xor :: Bool -> Bool -> Bool
 xor x y | x == true && y == false = true
         | x == false && y == true = true

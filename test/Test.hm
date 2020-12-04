@@ -2,85 +2,21 @@ module Test where
 
 import Prelude
 
-import Day00 as D00
-import Day01 as D01
-import Day02 as D02
-import Day03 as D03
-import Day04 as D04
+import Day00Test as D00
+import Day01Test as D01
+import Day02Test as D02
+import Day03Test as D03
+import Day04Test as D04
 
-import Test.QuickCheck (TestGroup(..), TestResult, quickCheck1, runTest)
+import Test.QuickCheck (TestGroup(..), TestResult, runTest)
 
 test :: TestGroup (Integer -> IO TestResult)
 test = TxG "AoC" [
-    TxG "Day00" [
-        TxG "Part1" [
-            Exe [
-                quickCheck1 "shouldBe 15" (D00.shouldBe D00.part1 (D00.input "./input/Day00p1.txt") 15)
-            ]
-         ],
-         TxG "Part2" [ 
-            Exe [
-                quickCheck1 "shouldBe 120" (D00.shouldBe D00.part2 (D00.input "./input/Day00p1.txt") 120)
-            ]
-        ]
-    ],
-    TxG "Day01" [
-        TxG "Part1" [
-            Exe [
-                quickCheck1 "shouldBe 514579" (D01.shouldBe D01.part1 (D01.input "./input/Day01p1test.txt") 514579),
-                quickCheck1 "shouldBe 858496" (D01.shouldBe D01.part1 (D01.input "./input/Day01p1.txt") 858496)
-            ]
-         ],
-         TxG "Part2" [ 
-            Exe [
-                quickCheck1 "shouldBe 241861950" (D01.shouldBe D01.part2 (D01.input "./input/Day01p1test.txt") 241861950),
-                quickCheck1 "shouldBe 263819430"(D01.shouldBe D01.part2 (D01.input "./input/Day01p1.txt") 263819430)
-            ]
-        ]
-    ],
-    TxG "Day02" [
-        TxG "Part1" [
-            Exe [
-                quickCheck1 "shouldBe 2" (D02.shouldBe D02.part1 (D02.input "./input/Day02p1test.txt") 2),
-                quickCheck1 "shouldBe 666" (D02.shouldBe D02.part1 (D02.input "./input/Day02p1.txt") 666)
-            ]
-         ],
-         TxG "Part2" [ 
-            Exe [
-                quickCheck1 "shouldBe 1" (D02.shouldBe D02.part2 (D02.input "./input/Day02p1test.txt") 1),
-                quickCheck1 "shouldBe 670" (D02.shouldBe D02.part2 (D02.input "./input/Day02p1.txt") 670)
-            ]
-        ]
-    ],
-    TxG "Day03" [
-        TxG "Part1" [
-            Exe [
-                quickCheck1 "shouldBe 7" (D03.shouldBe D03.part1 (D03.input "./input/Day03p1test.txt") (3,1) 7),
-                quickCheck1 "shouldBe 195" (D03.shouldBe D03.part1 (D03.input "./input/Day03p1.txt") (3,1) 195)
-            ]
-         ],
-         TxG "Part2" [ 
-            Exe [
-                quickCheck1 "shouldBe 366" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1test.txt") (0,0) 336),
-                quickCheck1 "shouldBe 3772314000" (D03.shouldBe D03.part2 (D03.input "./input/Day03p1.txt") (0,0) 3772314000)
-            ]
-        ]
-    ],
-    TxG "Day04" [
-        TxG "Part1" [
-            Exe [
-                quickCheck1 "shouldBe 2" (D04.shouldBe D04.part1 (D04.input "./input/Day04p1test.txt") 2),
-                quickCheck1 "shouldBe 202" (D04.shouldBe D04.part1 (D04.input "./input/Day04p1.txt") 202)
-            ]
-         ],
-         TxG "Part2" [ 
-            Exe [
-                quickCheck1 "shouldBe 4" (D04.shouldBe D04.part2 (D04.input "./input/Day04p2valid.txt") 4),
-                quickCheck1 "shouldBe 0" (D04.shouldBe D04.part2 (D04.input "./input/Day04p2invalid.txt") 0),
-                quickCheck1 "shouldBe 137" (D04.shouldBe D04.part2 (D04.input "./input/Day04p1.txt") 137)
-            ]
-        ]
-    ]
+    D00.test,
+    D01.test,
+    D02.test,
+    D03.test,
+    D04.test
 ]
 
 main :: IO ()

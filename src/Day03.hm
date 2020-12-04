@@ -29,9 +29,6 @@ import Data.List (init, (!!), elem, product)
 import Data.String as S
 import Data.Binary (toStr)
 
-shouldBe :: (Forrest -> (Integer, Integer) -> Integer) -> Forrest -> (Integer, Integer) -> Integer -> Integer -> Boolean
-shouldBe f ts s n _ = f ts s == n
-
 type Forrest = {
     xMax :: Integer,
     yMax :: Integer,

@@ -38,9 +38,6 @@ type Passport = {
     countryID :: Maybe String    
 }
 
-shouldBe :: ([Passport] -> Integer) -> [Passport] -> Integer -> Integer -> Boolean
-shouldBe f ps n _ = f ps == n
-
 makePassport :: [(String, String)] -> Passport
 makePassport fields = {
     birthYear = lookup "byr" fields, 

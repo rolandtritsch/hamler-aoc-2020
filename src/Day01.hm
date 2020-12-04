@@ -25,9 +25,6 @@ input :: String -> [Integer]
 input filename = reverse $ sort $ map read $ tail $ reverse $ lines $ toStr $ contents 
     where contents = unsafePerformIO $ readFile filename
 
-shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
-shouldBe f es n _ = f es == n
-
 part1 :: [Integer] -> Integer
 part1 expenses = x * y where
     (x, y) = head $ [(x,y) | x <- expenses, y <- expenses, x + y == 2020]
