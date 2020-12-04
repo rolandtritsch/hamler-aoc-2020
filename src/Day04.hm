@@ -3,9 +3,16 @@ Problem: <https://adventofcode.com/2020/day/4>
 
 Solution:
 
-General - ???
+General - Mainly a file parsing problem. Parse/scan all passports. When/while
+scanning all fields are optional (might be there or not). While checking only
+cid is optional (all other fields need to be there).
 
-Part 1 - ???
+Question is: What is the right datastructure for this? Could do a Map or a list
+of key/value pairs or a record with optional fields (Maybe).
+
+Let's go monadic. Let's use Maybe.
+
+Part 1 - Scan the file and do the check.
 
 Part 2 - ???
 -}
@@ -13,19 +20,60 @@ module Day04 where
 
 import Prelude
 
-import Data.List (init, sum, product)
-import Data.String (lines)
+import Data.List (lookup, (!!))
+import Data.String (join, replace, split, trim)
 import Data.Binary (toStr)
+import Data.Maybe (isJust)
 
-shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
-shouldBe f is n _ = f is == n
+type Passport = {
+    birthYear :: Maybe String,
+    issueYear :: Maybe String,
+    expirationYear :: Maybe String,
+    height :: Maybe String,
+    hairColor :: Maybe String,
+    eyeColor :: Maybe String,
+    passportID :: Maybe String,
+    countryID :: Maybe String    
+}
 
-input :: String -> [Integer]
-input filename = map read $ init $ lines $ toStr $ contents where
-    contents = unsafePerformIO $ readFile filename
+shouldBe :: ([Passport] -> Integer) -> [Passport] -> Integer -> Integer -> Boolean
+shouldBe f ps n _ = f ps == n
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+makePassport :: [(String, String)] -> Passport
+makePassport fields = {
+    birthYear = lookup "byr" fields, 
+    issueYear = lookup "iyr" fields,
+    expirationYear = lookup "eyr" fields,
+    height = lookup "hgt" fields,
+    hairColor = lookup "hcl" fields,
+    eyeColor = lookup "ecl" fields,
+    passportID = lookup "pid" fields,
+    countryID = lookup "cid" fields
+}
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+isValid :: Passport -> Bool
+isValid p = (
+    isJust p.birthYear &&
+    isJust p.issueYear &&
+    isJust p.expirationYear &&
+    isJust p.height &&
+    isJust p.hairColor &&
+    isJust p.eyeColor &&
+    isJust p.passportID
+)
+
+input :: String -> [Passport]
+input filename = map makePassport passports where
+    contents = toStr $ unsafePerformIO $ readFile filename
+    passportLines = map processLine $ split contents "\n\n" where
+        processLine l = trim $ join (replace l "\n" " ") ""
+    passports = map makeFields passportLines where
+        makeFields l = map keyValue $ split l " " where
+            keyValue kv = (field !! 0, field !! 1) where
+                field = split kv ":"
+
+part1 :: [Passport] -> Integer
+part1 ps = length $ filter isValid ps
+
+part2 :: [Passport] -> Integer
+part2 ps = length ps
