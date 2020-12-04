@@ -7,6 +7,7 @@ import Day01Test as D01
 import Day02Test as D02
 import Day03Test as D03
 import Day04Test as D04
+import Day05Test as D05
 
 import Test.QuickCheck (TestGroup(..), TestResult, runTest)
 
@@ -16,7 +17,8 @@ test = TxG "AoC" [
     D01.test,
     D02.test,
     D03.test,
-    D04.test
+    D04.test,
+    D05.test
 ]
 
 main :: IO ()
