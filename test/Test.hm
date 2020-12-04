@@ -77,7 +77,7 @@ test = TxG "AoC" [
             Exe [
                 quickCheck1 "shouldBe 4" (D04.shouldBe D04.part2 (D04.input "./input/Day04p2valid.txt") 4),
                 quickCheck1 "shouldBe 0" (D04.shouldBe D04.part2 (D04.input "./input/Day04p2invalid.txt") 0),
-                quickCheck1 "shouldBe 280" (D04.shouldBe D04.part2 (D04.input "./input/Day04p1.txt") 280)
+                quickCheck1 "shouldBe 137" (D04.shouldBe D04.part2 (D04.input "./input/Day04p1.txt") 137)
             ]
         ]
     ]
