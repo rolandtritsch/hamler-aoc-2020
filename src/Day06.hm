@@ -3,9 +3,9 @@ Problem: <https://adventofcode.com/2020/day/6>
 
 Solution:
 
-General - ???
+General - Count problem. Counting number of yeses per group.
 
-Part 1 - ???
+Part 1 - Sum up the groups.
 
 Part 2 - ???
 -}
@@ -13,16 +13,22 @@ module Day06 where
 
 import Prelude
 
-import Data.List (init, sum, product)
-import Data.String (lines)
+import Data.List (sum, nub)
+import Data.String (split, join)
 import Data.Binary (toStr)
 
-input :: String -> [Integer]
-input filename = map read $ init $ lines $ toStr $ contents where
-    contents = unsafePerformIO $ readFile filename
+type Group = [String]
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+input :: String -> [Group]
+input filename = groups where
+    contents = toStr $ unsafePerformIO $ readFile filename
+    groups = map makeGroup $ split contents "\n\n" where
+        makeGroup g = split g "\n"
+        
+part1 :: [Group] -> Integer
+part1 gs = sum yeses where
+    yeses = map countYes gs where
+        countYes g = length $ nub $ map (\c -> c) $ join g ""
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+part2 :: [Group] -> Integer
+part2 gs = length gs 
