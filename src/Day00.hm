@@ -18,8 +18,8 @@ import Data.String (lines)
 import Data.Binary (toStr)
 
 input :: String -> [Integer]
-input filename = map read $ init $ lines $ toStr $ contents where
-    contents = unsafePerformIO $ readFile filename
+input filename = map read contents where
+    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
 
 part1 :: [Integer] -> Integer
 part1 is = sum is 
