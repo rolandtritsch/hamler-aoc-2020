@@ -54,6 +54,7 @@ part1 :: Game -> Integer
 part1 game = winingScore done.player1 done.player2 where
     winingScore deck1 [] = score deck1 
     winingScore [] deck2 = score deck2 
+    winingScore _ _ = 0 
     done = playRound game
 
 part2 :: Game -> Integer
