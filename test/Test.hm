@@ -10,6 +10,7 @@ import Day04Test as D04
 import Day05Test as D05
 import Day06Test as D06
 import Day07Test as D07
+import Day08Test as D08
 
 import Day21Test as D21
 import Day22Test as D22
@@ -26,6 +27,7 @@ test = TxG "AoC" [
     D05.test,
     D06.test,
     D07.test,
+    D08.test,
     D21.test,
     D22.test
 ]
