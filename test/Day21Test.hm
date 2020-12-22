@@ -6,19 +6,23 @@ import Test.QuickCheck (TestGroup(..), TestResult, quickCheck1)
 
 import Day21 as D21
 
-shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
+import Data.Map as M
+
+shouldBe :: (M.Map String [[String]] -> Integer) -> M.Map String [[String]] -> Integer -> Integer -> Boolean
 shouldBe f is n _ = f is == n
 
 test :: TestGroup (Integer -> IO TestResult)
 test = TxG "Day21" [
     TxG "Part1" [
         Exe [
-            quickCheck1 "shouldBe 15" (shouldBe D21.part1 (D21.input "./input/Day21p1.txt") 15)
+            quickCheck1 "shouldBe 5" (shouldBe D21.part1 (D21.input "./input/Day21p1test.txt") 5),
+            quickCheck1 "shouldBe ???" (shouldBe D21.part1 (D21.input "./input/Day21p1.txt") 4709)
         ]
     ],
     TxG "Part2" [ 
         Exe [
-            quickCheck1 "shouldBe 120" (shouldBe D21.part2 (D21.input "./input/Day21p1.txt") 120)
+            quickCheck1 "shouldBe 3" (shouldBe D21.part2 (D21.input "./input/Day21p1test.txt") 3),
+            quickCheck1 "shouldBe 8" (shouldBe D21.part2 (D21.input "./input/Day21p1.txt") 8)
         ]
     ]
 ]

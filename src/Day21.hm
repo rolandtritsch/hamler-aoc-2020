@@ -3,9 +3,13 @@ Problem: <https://adventofcode.com/2020/day/21>
 
 Solution:
 
-General - ???
+General - Analyse food. Food has incredients. A given allergene is in
+one-of the ingredients.
 
-Part 1 - ???
+Part 1 - Build the intersections to find out which incredients do have
+allergens. Find more by looking for allergens with only one ingredient
+(search by elimination; sudoku strategy). You need to do the second
+step/phase recursively until no more "singletons" can be found.
 
 Part 2 - ???
 -}
@@ -13,16 +17,68 @@ module Day21 where
 
 import Prelude
 
-import Data.List (init, sum, product)
-import Data.String (lines)
+import Data.List (init, (!!), elem, notElem, nub)
+import Data.String (lines, split, trim)
 import Data.Binary (toStr)
+import Data.Regex as R
+import Data.Result (fromOk)
+import Data.Map as M
 
-input :: String -> [Integer]
-input filename = map read contents where
+input :: String -> M.Map String [[String]]
+input filename = foldl merge M.empty $ foldl (++) [] $ map processLine contents where
     contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+    processLine l = map (\a -> (trim a, [ingredients])) allergens where
+      linePattern = fromOk $ R.compile "^(.*) \\(contains (.*)\\)$" []
+      tokens = tail $ R.split l linePattern [R.Trim]
+      (ingredients, allergens) =  (split (tokens !! 0) " ", split (tokens !! 1) ",")
+    merge m (a, is) = M.updateWithInit a (\is' -> is' ++ is) is m
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+intersect :: forall a. [a] -> [a] -> [a]
+intersect [] _ = []
+intersect [x|xs] ys
+    | elem x ys = cons x $ intersect xs ys
+    | otherwise = intersect xs ys
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+intersect' :: forall a. [[a]] -> [a]
+intersect' [] = []
+intersect' lists = foldl intersect (head lists) lists
+
+diff :: forall a. [a] -> [a] -> [a]
+diff this fromThat = filter (\e -> notElem e this) fromThat
+
+flatMapValues :: forall k v. M.Map k [[v]] -> [v]
+flatMapValues m = foldl (++) [] $ foldl (++) [] $ M.values m
+
+diffMapValues :: forall k v. [v] -> M.Map k [[v]] -> M.Map k [[v]]
+diffMapValues this m = M.map (\(_, vs) -> diffValues this vs) m where
+    diffValues this' vs = map (\fromThat -> diff this' fromThat) vs
+
+isEmpty :: forall a. [a] -> Bool
+isEmpty [] = true
+isEmpty _ = false
+
+part1 :: forall k v. M.Map k [[v]] -> Integer
+part1 foods = length freeOfAllergens where
+    phase1HaveAllergens = nub $ flatMapValues $ intersections where
+        intersections = M.map (\(_, v) -> [intersect' v]) foods 
+    phase2HaveAllergens = nub $ flatMapValues $ singletons where
+        singletons = M.map (\(_, v) -> filter lengthOne v) $ diffMapValues phase1HaveAllergens foods where
+            lengthOne v' = length v' == 1
+    freeOfAllergens = flatMapValues $ diffMapValues (phase1HaveAllergens ++ phase2HaveAllergens) foods
+
+part1' :: forall k v. M.Map k [[v]] -> Integer
+part1' foods = length freeOfAllergens where
+    phase1HaveAllergens = nub $ flatMapValues $ intersections where
+        intersections = M.map (\(_, v) -> [intersect' v]) foods 
+    phase2HaveAllergens alreadyKnownAllergens = go alreadyKnownAllergens false where
+        go as done
+            | done = as
+            | otherwise = go (as ++ more) (isEmpty more) where
+                more = nub $ flatMapValues $ singletons where
+                    singletons = M.map (\(_, v) -> filter lengthOne v) $ diffMapValues as foods where
+                        lengthOne v' = length v' == 1
+    freeOfAllergens = flatMapValues $ diffMapValues (phase1HaveAllergens ++ (phase2HaveAllergens phase1HaveAllergens)) foods 
+
+
+part2 :: M.Map String [[String]] -> Integer
+part2 is = M.size is
