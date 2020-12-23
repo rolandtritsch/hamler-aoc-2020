@@ -3,7 +3,9 @@ Problem: <https://adventofcode.com/2020/day/9>
 
 Solution:
 
-General - ???
+General - Get a/the list of numbers. Set the length of the preamble (P).
+Push a window of length P over the list and check the next number (by
+calcing the sum of pairs until we find a match).
 
 Part 1 - ???
 
@@ -13,16 +15,34 @@ module Day09 where
 
 import Prelude
 
-import Data.List (init, sum, product)
+import Data.List (init, (!!))
 import Data.String (lines)
 import Data.Binary (toStr)
 
-input :: String -> [Integer]
-input filename = map read contents where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+type XMAS = {
+    preamble :: Integer,
+    numbers :: [Integer]
+}
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+input :: String -> XMAS
+input filename = {preamble = head contents, numbers = tail contents} where
+    contents = map read $ init $ lines $ toStr $ unsafePerformIO $ readFile filename
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+isNotEmpty :: forall a. [a] -> Bool
+isNotEmpty [] = false
+isNotEmpty _ = true
+
+check :: [Integer] -> Integer -> Bool
+check xmas preamble = isNotEmpty pairs where
+    n = xmas !! preamble
+    ns = take preamble xmas
+    pairs = [(x,y) | x <- ns, y <- ns, x > y, x + y == n] 
+
+part1 :: XMAS -> Integer
+part1 xmas = go xmas.numbers xmas.preamble (check xmas.numbers xmas.preamble) where
+  go ns p false = ns !! p
+  go ns p true = go ns' p (check ns' p) where
+      ns' = tail ns
+
+part2 :: XMAS -> Integer
+part2 xmas = length xmas.numbers
