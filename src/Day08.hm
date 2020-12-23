@@ -3,9 +3,11 @@ Problem: <https://adventofcode.com/2020/day/8>
 
 Solution:
 
-General - ???
+General - A(nother) stack machine problem. Execute instructions
+until you have reached the end of the program.
 
-Part 1 - ???
+Part 1 - The end of the program is reached, when I am hitting
+a program counter the second time.
 
 Part 2 - ???
 -}
