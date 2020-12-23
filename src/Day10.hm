@@ -13,16 +13,21 @@ module Day10 where
 
 import Prelude
 
-import Data.List (init, sum, product)
+import Data.List (init, maximum)
 import Data.String (lines)
 import Data.Binary (toStr)
 
-input :: String -> [Integer]
+type Jolt = Integer
+
+input :: String -> [Jolt]
 input filename = map read contents where
     contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+part1 :: [Jolt] -> Integer
+part1 jolts = count 1 * count 3 where
+    count n = length $ filter (\d -> d == n) diffs where
+        jolts' = sort $ jolts ++ [0, (maximum jolts) + 3]
+        diffs = map (\(a, b) -> b - a) $ zip (init jolts') (tail jolts')
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+part2 :: [Jolt] -> Integer
+part2 jolts = length jolts
