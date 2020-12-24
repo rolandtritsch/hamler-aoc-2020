@@ -39,30 +39,59 @@ module Day11 where
 
 import Prelude
 
-import Data.List (init, (!!))
+import Data.List (init, (!!), sum)
 import Data.String (lines)
 import Data.Binary (toStr)
 import Data.Map as M
 
-data Status = Floor | Empty | Occupied | Unknown
 type Location = (Integer, Integer)
-type Seats = M.Map Location Status
-type SeatsNeighbors = M.Map Location Integer 
+type SeatsStatus = M.Map Location Char
+type SeatsNeighborCount = M.Map Location Integer
+
+type Seats = {
+    status :: SeatsStatus,
+    neighbors :: SeatsNeighborCount,
+    dimensions :: (Integer, Integer)
+}
 
 input :: String -> Seats
-input filename = M.fromList seats where
+input filename = {status = seatsStatus, neighbors = seatsNeighbors, dimensions = (rowCount, colCount)} where
     contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
-    rCount = length contents
-    cCount = length $ contents !! 0
-    rows = zip [0 .. (rCount - 1)] contents
-    grid = map (\(row, cols) -> (row, zip [0 .. (cCount - 1)] cols)) rows
-    seats = foldl (++) [] $ map (\(row, cols) -> map (\(col, status) -> ((row, col), makeStatus status)) cols) grid where
-        makeStatus '.' = Floor
-        makeStatus 'L' = Empty
-        makeStatus _ = Unknown
+    rowCount = length contents
+    colCount = length $ contents !! 0
+    rows = zip [0..(rowCount - 1)] contents
+    grid = map (\(row, cols) -> (row, zip [0..(colCount - 1)] cols)) rows
+    seatsStatus = M.fromList $ foldl (++) [] $ map (\(row, cols) -> map (\(col, status) -> ((row, col), status)) cols) grid
+    seatsNeighbors = makeNeighbors seatsStatus (rowCount, colCount)
 
+makeNeighbors :: SeatsStatus -> (Integer, Integer) -> SeatsNeighborCount
+makeNeighbors seatsStatus dimensions = M.fromList neighbors where
+    (rowCount, colCount) = dimensions
+    neighbors = [((row, col), calcCount (row, col)) | row <- [0..(rowCount - 1)], col <- [0..(colCount -1)]] where
+        offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+        calcCount (row, col) = sum $ map (\(rowOffset, colOffset) -> lookupCount (row + rowOffset, col + colOffset)) offsets where
+            lookupCount (row', col')
+                | row' == -1 || col' == -1 = 0
+                | row' == rowCount || col' == colCount = 0
+                | otherwise = if M.get (row', col') seatsStatus == '#' then 1 else 0
+
+nextSeats :: Seats -> Seats
+nextSeats seats = {status = nextStatus, neighbors = nextNeighbors, dimensions = seats.dimensions} where
+    (rowCount, colCount) = seats.dimensions
+    nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0..(rowCount - 1)], col <- [0..(colCount -1)]] where
+        calcStatus position
+            | M.get position seats.status == 'L' && M.get position seats.neighbors == 0 = '#' 
+            | M.get position seats.status == '#' && M.get position seats.neighbors >= 4 = 'L'
+            | otherwise = M.get position seats.status
+    nextNeighbors = makeNeighbors nextStatus seats.dimensions
+    
 part1 :: Seats -> Integer
-part1 seats = M.size seats
+part1 seats = length $ filter (\s -> s == '#') $ M.values done.status where
+      done = go ns (seats.status == ns.status) where
+          ns = nextSeats seats
+          go seats' true = seats'
+          go seats' false = go ns'(seats'.status == ns'.status) where
+              ns' = nextSeats seats'
 
 part2 :: Seats -> Integer
-part2 seats = M.size seats
+part2 seats = M.size seats.status
