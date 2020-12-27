@@ -27,7 +27,6 @@ data Operation = Mask | Write
 data Instruction = Instruction Operation Argument Argument
 type Program = {
     counter :: Integer,
-    instructions :: [Instruction],
     mask :: (Integer, Integer),
     memory :: M.Map Address Value
 }
@@ -59,19 +58,33 @@ applyMask mask int = band mask1 (bor int mask0) where
     mask0 = binArrayToInteger $ maskStrToBinArray charToInt0 mask
     mask1 = binArrayToInteger $ maskStrToBinArray charToInt1 mask
 
-input :: String -> Program
-input filename = {counter = 0, instructions = instructions, mask = (0,0), memory = M.empty} where
+input :: String -> [Instruction]
+input filename = map (\l -> processLine (words l)) contents where
     contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
-    instructions = map (\l -> processLine (words l)) contents where
-        processLine ["mask"|args] = Instruction Mask mask0 mask1 where
-            mask0 = binArrayToInteger $ maskStrToBinArray charToInt0 (args !! 1)
-            mask1 = binArrayToInteger $ maskStrToBinArray charToInt1 (args !! 1)
-        processLine tokens = Instruction Write address value where
-            address = read $ sliceTo (tokens !! 0) 4 ((length (tokens !! 0)) - 1)
-            value = read (tokens !! 2)
-                
-part1 :: Program -> Integer
-part1 program = length program.instructions 
+    processLine ["mask"|args] = Instruction Mask mask0 mask1 where
+        mask0 = binArrayToInteger $ maskStrToBinArray charToInt0 (args !! 1)
+        mask1 = binArrayToInteger $ maskStrToBinArray charToInt1 (args !! 1)
+    processLine tokens = Instruction Write address value where
+        address = read $ sliceTo (tokens !! 0) 4 ((length (tokens !! 0)) - 1)
+        value = read (tokens !! 2)
 
-part2 :: Program -> Integer
-part2 program = length program.instructions
+execute :: Program -> Instruction -> Program
+execute program (Instruction Mask mask0 mask1) = {
+    counter = program.counter + 1,
+    mask = (mask0, mask1),
+    memory = program.memory
+}
+execute program (Instruction Write addr value) = {
+    counter = program.counter + 1,
+    mask = program.mask,
+    memory = M.put addr maskedValue program.memory
+} where
+    maskedValue = band (snd program.mask) (bor value (fst program.mask))
+    
+part1 :: [Instruction] -> Integer
+part1 instructions = sum $ M.values done.memory where
+    program = {counter = 0, mask = (0, 0), memory = M.empty}
+    done = foldl execute program instructions
+
+part2 :: [Instruction] -> Integer
+part2 instructions = length instructions
