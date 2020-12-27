@@ -13,16 +13,74 @@ module Day14 where
 
 import Prelude
 
-import Data.List (init, sum, product)
-import Data.String (lines)
 import Data.Binary (toStr)
+import Data.Float as F
+import Data.Int (toFloat)
+import Data.List (sum)
+import Data.Map as M
+import Data.Regex as R
+import Data.Result (fromOk)
+import Data.String (indexOf)
 
-input :: String -> [Integer]
-input filename = map read contents where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+type MemLoc = {
+    address :: Integer,
+    value :: Integer
+}
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+type Block = {
+    mask :: String,
+    memLoc :: [MemLoc]
+}
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+type Program = [Block]
+
+type Memory = M.Map Integer Integer
+
+charToInt0 :: Char -> Integer
+charToInt0 '0' = 0
+charToInt0 '1' = 1
+charToInt0 'X' = 0
+charToInt0 _ = -1
+
+charToInt1 :: Char -> Integer
+charToInt1 '0' = 0
+charToInt1 '1' = 1
+charToInt1 'X' = 1
+charToInt1 _ = -1
+
+maskStrToBinArray :: (Char -> Integer) -> String -> [Integer]
+maskStrToBinArray f m = map f m
+
+binArrayToInteger :: [Integer] -> Integer
+binArrayToInteger bin = int where
+    aFloat = [toFloat a | a <- reverse bin]
+    bFloat = [toFloat b | b <- [0..((length bin) - 1)]] 
+    binZip = zip aFloat bFloat
+    int = F.trunc $ sum $ map (\(a, b) -> a * F.pow 2.0 b) binZip
+
+applyMask :: String -> Integer -> Integer
+applyMask mask int = band mask1 (bor int mask0) where
+    mask0 = binArrayToInteger $ maskStrToBinArray charToInt0 mask
+    mask1 = binArrayToInteger $ maskStrToBinArray charToInt1 mask
+
+input :: String -> Program
+input filename = blocks where
+    contents = toStr $ unsafePerformIO $ readFile filename
+    blockPattern = fromOk $ R.compile "mask = ([01X]*)\\n(mem\\[(\\d*)\\] = ((\\d*)\\n))*" []
+    tokens = tail $ filter (\s -> (indexOf '\n' s) == 0) $ R.split contents blockPattern []
+    (tokenBlocks, _) = foldl splitBlock ([], []) tokens where
+        splitBlock (blocks', current') [] = (blocks' ++ [current'], [])
+        splitBlock (blocks', current') t = (blocks', current' ++ [t])
+    blocks = map block tokenBlocks where
+        block b = {mask = mask, memLoc = mem} where
+            mask = head b
+            mem = go (take 2 b) (drop 2 b) where
+                go [address|[value|[]]] [] = [{address = read address, value = read value}] 
+                go [address|[value|[]]] rest = go (take 2 rest) (drop 2 rest) ++ [{address = read address, value = read value}]
+                go _ _ = []
+                
+part1 :: Program -> Integer
+part1 program = length program 
+
+part2 :: Program -> Integer
+part2 program = length program 
