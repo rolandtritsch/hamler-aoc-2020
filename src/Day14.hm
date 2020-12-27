@@ -16,25 +16,21 @@ import Prelude
 import Data.Binary (toStr)
 import Data.Float as F
 import Data.Int (toFloat)
-import Data.List (sum)
+import Data.List (init, sum, (!!))
 import Data.Map as M
-import Data.Regex as R
-import Data.Result (fromOk)
-import Data.String (indexOf)
+import Data.String (lines, words, sliceTo)
 
-type MemLoc = {
-    address :: Integer,
-    value :: Integer
+type Argument = Integer
+type Address = Integer
+type Value = Integer
+data Operation = Mask | Write
+data Instruction = Instruction Operation Argument Argument
+type Program = {
+    counter :: Integer,
+    instructions :: [Instruction],
+    mask :: (Integer, Integer),
+    memory :: M.Map Address Value
 }
-
-type Block = {
-    mask :: String,
-    memLoc :: [MemLoc]
-}
-
-type Program = [Block]
-
-type Memory = M.Map Integer Integer
 
 charToInt0 :: Char -> Integer
 charToInt0 '0' = 0
@@ -64,23 +60,18 @@ applyMask mask int = band mask1 (bor int mask0) where
     mask1 = binArrayToInteger $ maskStrToBinArray charToInt1 mask
 
 input :: String -> Program
-input filename = blocks where
-    contents = toStr $ unsafePerformIO $ readFile filename
-    blockPattern = fromOk $ R.compile "mask = ([01X]*)\\n(mem\\[(\\d*)\\] = ((\\d*)\\n))*" []
-    tokens = tail $ filter (\s -> (indexOf '\n' s) == 0) $ R.split contents blockPattern []
-    (tokenBlocks, _) = foldl splitBlock ([], []) tokens where
-        splitBlock (blocks', current') [] = (blocks' ++ [current'], [])
-        splitBlock (blocks', current') t = (blocks', current' ++ [t])
-    blocks = map block tokenBlocks where
-        block b = {mask = mask, memLoc = mem} where
-            mask = head b
-            mem = go (take 2 b) (drop 2 b) where
-                go [address|[value|[]]] [] = [{address = read address, value = read value}] 
-                go [address|[value|[]]] rest = go (take 2 rest) (drop 2 rest) ++ [{address = read address, value = read value}]
-                go _ _ = []
+input filename = {counter = 0, instructions = instructions, mask = (0,0), memory = M.empty} where
+    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+    instructions = map (\l -> processLine (words l)) contents where
+        processLine ["mask"|args] = Instruction Mask mask0 mask1 where
+            mask0 = binArrayToInteger $ maskStrToBinArray charToInt0 (args !! 1)
+            mask1 = binArrayToInteger $ maskStrToBinArray charToInt1 (args !! 1)
+        processLine tokens = Instruction Write address value where
+            address = read $ sliceTo (tokens !! 0) 4 ((length (tokens !! 0)) - 1)
+            value = read (tokens !! 2)
                 
 part1 :: Program -> Integer
-part1 program = length program 
+part1 program = length program.instructions 
 
 part2 :: Program -> Integer
-part2 program = length program 
+part2 program = length program.instructions
