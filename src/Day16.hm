@@ -27,6 +27,12 @@ type Notes = {
 }
 
 input :: String -> Notes
+input filename = {ranges = [], myTicket = myTicket, nearbyTickets = nearbyTickets} where
+    processLine l = map read $ split l ","
+    myTicket = processLine $ head $ init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-your")
+    nearbyTickets = map processLine contents where
+        contents = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-nearby")
+{-
 input filename = {ranges = ranges, myTicket = myTicket, nearbyTickets = nearbyTickets} where
     processLine l = map read $ split l ","
     myTicket = processLine $ head $ init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-your")
@@ -36,10 +42,11 @@ input filename = {ranges = ranges, myTicket = myTicket, nearbyTickets = nearbyTi
         contents = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-ranges")
         processRange r = Range desc ([from..to] ++ [from'..to']) where
             desc = (split r ":") !! 0
-            tokens = split r " "
+            tokens = split ((split r ":") !! 1) " "
             (from, to) = (read $ (split (tokens !! 2) "-") !! 0, read $ (split (tokens !! 2) "-") !! 1)
-            (from', to') = (read $ (split (tokens !! 4) "-") !! 0, read $ (split (tokens !! 2) "-") !! 1)
-       
+            (from', to') = (read $ (split (tokens !! 4) "-") !! 0, read $ (split (tokens !! 4) "-") !! 1)
+-}
+
 part1 :: Notes -> Integer
 part1 notes = length notes.nearbyTickets 
 
