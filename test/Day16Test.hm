@@ -13,8 +13,8 @@ test :: TestGroup (Integer -> IO TestResult)
 test = TxG "Day16" [
     TxG "Part1" [
         Exe [
-            quickCheck1 "shouldBe 4" (shouldBe D16.part1 (D16.input "./input/Day16p1test.txt") 4),
-            quickCheck1 "shouldBe 236" (shouldBe D16.part1 (D16.input "./input/Day16p1.txt") 236)
+            quickCheck1 "shouldBe 71" (shouldBe D16.part1 (D16.input "./input/Day16p1test.txt") 71),
+            quickCheck1 "shouldBe 21071" (shouldBe D16.part1 (D16.input "./input/Day16p1.txt") 21071)
         ]
     ],
     TxG "Part2" [ 
