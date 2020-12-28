@@ -13,16 +13,35 @@ module Day16 where
 
 import Prelude
 
-import Data.List (init, sum, product)
-import Data.String (lines)
+import Data.List (init, (!!))
+import Data.String (lines, split)
 import Data.Binary (toStr)
 
-input :: String -> [Integer]
-input filename = map read contents where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+type Description = String
+data Range = Range Description [Integer]
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+type Notes = {
+    ranges :: [Range],
+    myTicket :: [Integer],
+    nearbyTickets :: [[Integer]]
+}
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+input :: String -> Notes
+input filename = {ranges = ranges, myTicket = myTicket, nearbyTickets = nearbyTickets} where
+    processLine l = map read $ split l ","
+    myTicket = processLine $ head $ init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-your")
+    nearbyTickets = map processLine contents where
+        contents = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-nearby")
+    ranges = map processRange contents where 
+        contents = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-ranges")
+        processRange r = Range desc ([from..to] ++ [from'..to']) where
+            desc = (split r ":") !! 0
+            tokens = split r " "
+            (from, to) = (read $ (split (tokens !! 2) "-") !! 0, read $ (split (tokens !! 2) "-") !! 1)
+            (from', to') = (read $ (split (tokens !! 4) "-") !! 0, read $ (split (tokens !! 2) "-") !! 1)
+       
+part1 :: Notes -> Integer
+part1 notes = length notes.nearbyTickets 
+
+part2 :: Notes -> Integer
+part2 notes = length notes.nearbyTickets 

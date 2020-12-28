@@ -50,7 +50,7 @@ flatMapValues :: forall k v. M.Map k [[v]] -> [v]
 flatMapValues m = foldl (++) [] $ foldl (++) [] $ M.values m
 
 diffMapValues :: forall k v. [v] -> M.Map k [[v]] -> M.Map k [[v]]
-diffMapValues this m = M.map (\(_, vs) -> diffValues this vs) m where
+diffMapValues this m = M.mapWithKey (\(_, vs) -> diffValues this vs) m where
     diffValues this' vs = map (\fromThat -> diff this' fromThat) vs
 
 isEmpty :: forall a. [a] -> Bool
@@ -60,22 +60,22 @@ isEmpty _ = false
 part1 :: forall k v. M.Map k [[v]] -> Integer
 part1 foods = length freeOfAllergens where
     phase1HaveAllergens = nub $ flatMapValues $ intersections where
-        intersections = M.map (\(_, v) -> [intersect' v]) foods 
+        intersections = M.mapWithKey (\(_, v) -> [intersect' v]) foods 
     phase2HaveAllergens = nub $ flatMapValues $ singletons where
-        singletons = M.map (\(_, v) -> filter lengthOne v) $ diffMapValues phase1HaveAllergens foods where
+        singletons = M.mapWithKey (\(_, v) -> filter lengthOne v) $ diffMapValues phase1HaveAllergens foods where
             lengthOne v' = length v' == 1
     freeOfAllergens = flatMapValues $ diffMapValues (phase1HaveAllergens ++ phase2HaveAllergens) foods
 
 part1' :: forall k v. M.Map k [[v]] -> Integer
 part1' foods = length freeOfAllergens where
     phase1HaveAllergens = nub $ flatMapValues $ intersections where
-        intersections = M.map (\(_, v) -> [intersect' v]) foods 
+        intersections = M.mapWithKey (\(_, v) -> [intersect' v]) foods 
     phase2HaveAllergens alreadyKnownAllergens = go alreadyKnownAllergens false where
         go as done
             | done = as
             | otherwise = go (as ++ more) (isEmpty more) where
                 more = nub $ flatMapValues $ singletons where
-                    singletons = M.map (\(_, v) -> filter lengthOne v) $ diffMapValues as foods where
+                    singletons = M.mapWithKey (\(_, v) -> filter lengthOne v) $ diffMapValues as foods where
                         lengthOne v' = length v' == 1
     freeOfAllergens = flatMapValues $ diffMapValues (phase1HaveAllergens ++ (phase2HaveAllergens phase1HaveAllergens)) foods 
 

@@ -19,7 +19,6 @@ import Prelude
 import System.IO (readFile)
 import Data.String (lines)
 import Data.Binary (toStr)
-import Data.List (nub)
 
 input :: String -> [Integer]
 input filename = reverse $ sort $ map read $ tail $ reverse $ lines $ toStr $ contents 
