@@ -6,19 +6,20 @@ import Test.QuickCheck (TestGroup(..), TestResult, quickCheck1)
 
 import Day17 as D17
 
-shouldBe :: ([Integer] -> Integer) -> [Integer] -> Integer -> Integer -> Boolean
+shouldBe :: (D17.Pocket -> Integer) -> D17.Pocket -> Integer -> Integer -> Boolean
 shouldBe f is n _ = f is == n
 
 test :: TestGroup (Integer -> IO TestResult)
 test = TxG "Day17" [
     TxG "Part1" [
         Exe [
-            quickCheck1 "shouldBe 15" (shouldBe D17.part1 (D17.input "./input/Day17p1.txt") 15)
+            quickCheck1 "shouldBe 112" (shouldBe D17.part1 (D17.input "./input/Day17p1test.txt") 112),
+            quickCheck1 "shouldBe 333" (shouldBe D17.part1 (D17.input "./input/Day17p1.txt") 333)
         ]
     ],
     TxG "Part2" [ 
         Exe [
-            quickCheck1 "shouldBe 120" (shouldBe D17.part2 (D17.input "./input/Day17p1.txt") 120)
+            quickCheck1 "shouldBe 38" (shouldBe D17.part2 (D17.input "./input/Day17p1.txt") 38)
         ]
     ]
 ]

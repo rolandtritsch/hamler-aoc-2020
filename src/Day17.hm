@@ -24,7 +24,7 @@ ones and check the remaining ones.
 
 That sounds more managable. Let's go with that.
 
-Part 1 - ???
+Part 1 - Just cycle 6 times.
 
 Part 2 - ???
 -}
@@ -63,21 +63,17 @@ cycle pocket = S.fromList (nextActive ++ nextActive') where
         | otherwise = 0
     count c = sum $ map (\o -> checkNeighbor c o) neighborOffsets
     nextActive = filter remainsActive active where
+        -- Note: I need +1 here, because the centre cube itself is active too
         remainsActive c = count' == (2+1) || count' == (3+1) where
             count' = count c
     nextActive' = filter becomesActive inactive where
         becomesActive c = count c == 3
-        possibleInactive' = [(x,y,z) | x <- [(xMin-1)..(xMax+1)], y <- [(yMin-1)..(yMax+1)], z <- [(zMin-1)..(zMax+1)]] where
-            ((xMin, yMin, zMin), (xMax, yMax, zMax)) = foldl findBoundaries ((0,0,0), (0,0,0)) active where
-                findBoundaries ((xMin', yMin', zMin'), (xMax', yMax', zMax')) (x,y,z) = ((xMin'', yMin'', zMin''), (xMax'', yMax'', zMax'')) where
-                    (xMin'', yMin'', zMin'') = (min xMin' x, min yMin' y, min zMin' z)
-                    (xMax'', yMax'', zMax'') = (max xMax' x, max yMax' y, max zMax' z)
         possibleInactive = nub $ foldl (++) [] $ map (\c -> makeCoordinates c neighborOffsets) active where
             makeCoordinates (x,y,z) offsets = map (\(x',y',z') -> (x+x',y+y',z+z')) offsets
         inactive = filter (\e -> notElem e active) possibleInactive
         
 part1 :: Pocket -> Integer
-part1 pocket = S.size $ go 5 $ cycle pocket where
+part1 pocket = S.size $ go (6-1) $ cycle pocket where
     go 0 p = p
     go n p = go (n-1) $ cycle p
 
