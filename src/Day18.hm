@@ -11,7 +11,7 @@ where every node is an expression. The (two) children are either a value
 or an expression again.
 
 To build the AST we first convert the expression string from infix notation
-to postfix notation (RPN) (with the shuntyard algorithm).
+to postfix notation (RPN) (with the shunting-yard algorithm).
 
 Building the AST from RPN is trivial (Note: We make this easy by reversing
 the RPN (12+ -> +21)).
@@ -46,7 +46,7 @@ popS stack = (head stack, tail stack)
 pushQ :: Char -> String -> String
 pushQ token queue = queue ++ [token]
 
--- shuntyard algorithm (toRPN)
+-- shunting-yard algorithm (toRPN)
 toPostfix :: String -> String
 toPostfix infix' = go infix' [] [] where
     go [token|tokens] output operators
