@@ -1,7 +1,6 @@
 module Test where
 
 import Prelude
-{-
 import Day00Test as D00
 import Day01Test as D01
 import Day02Test as D02
@@ -20,17 +19,15 @@ import Day14Test as D14
 import Day15Test as D15
 import Day16Test as D16
 import Day17Test as D17
+import Day18Test as D18
 
 import Day21Test as D21
 import Day22Test as D22
--}
-import Day18Test as D18
 
 import Test.QuickCheck (TestGroup(..), TestResult, runTest)
 
 test :: TestGroup (Integer -> IO TestResult)
 test = TxG "AoC" [
-{-
     D00.test,
     D01.test,
     D02.test,
@@ -49,10 +46,9 @@ test = TxG "AoC" [
     D15.test,
     D16.test,
     D17.test,
+    D18.test,
     D21.test,
     D22.test
--}
-    D18.test
 ]
 
 main :: IO ()
