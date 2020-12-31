@@ -19,7 +19,7 @@ test = TxG "Day19" [
     ],
     TxG "Part2" [ 
         Exe [
-            quickCheck1 "shouldBe 386" (shouldBe D19.part2 (D19.input "./input/Day19p1.txt") (386 - 2))
+            quickCheck1 "shouldBe 368" (shouldBe D19.part2 (D19.input "./input/Day19p1.txt") 368)
         ]
     ]
 ]

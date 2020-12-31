@@ -24,19 +24,6 @@ The regex to solve the test case looks like this ...
 (?P>r0)
 $
 
-^
-(?(DEFINE)
-  (?P<r0>(((?P>r4)(?P>r1)(?P>r5)))
-  (?P<r1>(((?P>r2)(?P>r3))|((?P>r3)(?P>r2)))
-  (?P<r2>(((?P>r4)(?P>r4))|((?P>r5)(?P>r5)))
-  (?P<r3>(((?P>r4)(?P>r5))|((?P>r5)(?P>r4)))
-  (?P<r4>a)
-  (?P<r5>b)
-)
-(?P>r0)
-$
-
-
 It (recursively) defines named groups and is then checking
 if r0 is matching the given string.
 
@@ -55,9 +42,6 @@ import Data.Binary (toStr)
 import Data.Regex as R
 import Data.Result (fromOk)
 
-type RuleSet = [String]
-type Rule = (String, [RuleSet])
-
 type SateliteImage = {
     regex :: String,
     messages :: [String]
@@ -65,26 +49,27 @@ type SateliteImage = {
 
 input :: String -> SateliteImage
 input filename = {regex = regex, messages = messages} where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-rules")
-    regex = "^(?(DEFINE)" ++ rules ++ ")(?P>r0)$"
-    rules = join (map processRules contents) ""
-    processRules l
-        | endsWith l "\"a\"" = "(?P<r" ++ r ++ ">a)" where
-            r = head $ split l ":"
-        | endsWith l "\"b\"" = "(?P<r" ++ r ++ ">b)" where
-            r = head $ split l ":"
-        | otherwise = "(?P<r" ++ rid ++ ">" ++ (join (map process ids) "|")  ++ ")" where
-            rid = head $ split l ":"
-            ids = map (\is -> split (trim is) " ") $ split ((split l ":") !! 1) "|"
-            process rs = "(" ++ (join (map (\r -> "(?P>r" ++ r ++ ")") rs) "") ++ ")"
     messages = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-messages")
+    rules = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-rules")
+    regex = "^(?(DEFINE)" ++ regexRules ++ ")(?P>r0)$" where
+        regexRules = join (map processRules rules) "" where
+            rid l = head $ split l ":"
+            processRules l
+                | endsWith l "\"a\"" = "(?P<r" ++ (rid l) ++ ">a)"
+                | endsWith l "\"b\"" = "(?P<r" ++ (rid l) ++ ">b)"
+                | otherwise = "(?P<r" ++ (rid l) ++ ">" ++ rs ++ ")" where
+                    rs = join (map p ids) "|"
+                    ids = map (\is -> split (trim is) " ") $ split ((split l ":") !! 1) "|"
+                    p is = "(" ++ (join (map (\i -> "(?P>r" ++ i ++ ")") is) "") ++ ")"
+
+matchOk :: R.RunResult -> Boolean
+matchOk (R.Match _) = true
+matchOk _ = false
 
 part1 :: SateliteImage -> Integer
 part1 image = length $ filter matchOk $ map match image.messages where
       pattern = fromOk $ R.compile image.regex []
       match m = R.run m pattern []
-      matchOk (R.Match _) = true
-      matchOk _ = false
 
 part2 :: SateliteImage -> Integer
 part2 image = length image.messages
