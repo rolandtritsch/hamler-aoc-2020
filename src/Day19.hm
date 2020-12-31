@@ -3,9 +3,45 @@ Problem: <https://adventofcode.com/2020/day/19>
 
 Solution:
 
-General - ???
+General - Looks like a tree walking problem ... and it is not.
 
-Part 1 - ???
+To solve this nicely you need to know/understand named capturing
+groups in regex. And you need to know that you can ignore the
+definitions of the named groups with (?(DEFINE)...).
+
+The regex to solve the test case looks like this ...
+
+^
+(?(DEFINE)
+  (?P<r4>a)
+  (?P<r5>b)
+  (?P<r3>((?P>r4)(?P>r5))|((?P>r5)(?P>r4)))
+  (?P<r2>((?P>r4)(?P>r4))|((?P>r5)(?P>r5)))
+  (?P<r1>((?P>r2)(?P>r3))|((?P>r3)(?P>r2)))
+  (?P<r0>((?P>r4)(?P>r1)(?P>r5)))
+  (?P<r0>((?P>r4)(?P>r1)(?P>r5)))
+)
+(?P>r0)
+$
+
+^
+(?(DEFINE)
+  (?P<r0>(((?P>r4)(?P>r1)(?P>r5)))
+  (?P<r1>(((?P>r2)(?P>r3))|((?P>r3)(?P>r2)))
+  (?P<r2>(((?P>r4)(?P>r4))|((?P>r5)(?P>r5)))
+  (?P<r3>(((?P>r4)(?P>r5))|((?P>r5)(?P>r4)))
+  (?P<r4>a)
+  (?P<r5>b)
+)
+(?P>r0)
+$
+
+
+It (recursively) defines named groups and is then checking
+if r0 is matching the given string.
+
+Part 1 - Go through all messages, match them against the regex and
+count the number of matches.
 
 Part 2 - ???
 -}
@@ -13,16 +49,42 @@ module Day19 where
 
 import Prelude
 
-import Data.List (init, sum, product)
-import Data.String (lines)
+import Data.List (init, (!!))
+import Data.String (lines, endsWith, split, trim, join)
 import Data.Binary (toStr)
+import Data.Regex as R
+import Data.Result (fromOk)
 
-input :: String -> [Integer]
-input filename = map read contents where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+type RuleSet = [String]
+type Rule = (String, [RuleSet])
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+type SateliteImage = {
+    regex :: String,
+    messages :: [String]
+}
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+input :: String -> SateliteImage
+input filename = {regex = regex, messages = messages} where
+    contents = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-rules")
+    regex = "^(?(DEFINE)" ++ rules ++ ")(?P>r0)$"
+    rules = join (map processRules contents) ""
+    processRules l
+        | endsWith l "\"a\"" = "(?P<r" ++ r ++ ">a)" where
+            r = head $ split l ":"
+        | endsWith l "\"b\"" = "(?P<r" ++ r ++ ">b)" where
+            r = head $ split l ":"
+        | otherwise = "(?P<r" ++ rid ++ ">" ++ (join (map process ids) "|")  ++ ")" where
+            rid = head $ split l ":"
+            ids = map (\is -> split (trim is) " ") $ split ((split l ":") !! 1) "|"
+            process rs = "(" ++ (join (map (\r -> "(?P>r" ++ r ++ ")") rs) "") ++ ")"
+    messages = init $ lines $ toStr $ unsafePerformIO $ readFile (filename ++ "-messages")
+
+part1 :: SateliteImage -> Integer
+part1 image = length $ filter matchOk $ map match image.messages where
+      pattern = fromOk $ R.compile image.regex []
+      match m = R.run m pattern []
+      matchOk (R.Match _) = true
+      matchOk _ = false
+
+part2 :: SateliteImage -> Integer
+part2 image = length image.messages
