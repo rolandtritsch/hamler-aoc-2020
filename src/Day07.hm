@@ -3,9 +3,10 @@ Problem: <https://adventofcode.com/2020/day/7>
 
 Solution:
 
-General - ???
+General - Hhhmmm ... to get started, I am going to build two data
+structures: contains and then (from contains) the reverse of it (isIn).
 
-Part 1 - ???
+Part 1 - Just use isIn (recursively) to find all outer bags for a given bag.
 
 Part 2 - ???
 -}
@@ -13,16 +14,48 @@ module Day07 where
 
 import Prelude
 
-import Data.List (init, sum, product)
-import Data.String (lines)
+import Data.List (init, (!!), nub)
+import Data.String (lines, split)
 import Data.Binary (toStr)
+import Data.Map as M
 
-input :: String -> [Integer]
-input filename = map read $ init $ lines $ toStr $ contents where
-    contents = unsafePerformIO $ readFile filename
+type Bag = String
+type OuterBag = Bag
+type InnerBag = (Integer, Bag)
+type Contains = M.Map OuterBag [InnerBag]
+type IsIn = M.Map Bag [Bag]
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+type Bags = {
+    contains :: Contains,
+    isIn :: IsIn
+}
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+input :: String -> Bags
+input filename = {contains = contains, isIn = isIn} where
+    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+    contains = M.fromList $ map processLine contents
+    processLine l = (outer, inners) where
+        outer = (tokens !! 0) ++ " " ++ (tokens !! 1) where
+            tokens = split ((split l " contain ") !! 0) " "
+        inners = map processInnerBag $ split ((split l " contain ") !! 1) ", " where
+            processInnerBag "no other bags." = (0, "other bags")
+            processInnerBag ib = (count, bag) where
+                tokens = split ib " " 
+                count = read $ tokens !! 0
+                bag = (tokens !! 1) ++ " " ++ (tokens !! 2)
+    isIn = foldl processContain M.empty (M.toList contains) where
+        processContain isIn' (outer, inners) = foldl processInner isIn' inners where
+            processInner isIn'' (0, _) = isIn''
+            processInner isIn'' (_, bag) = M.updateWithInit bag (\outers -> outers ++ [outer]) [outer] isIn''
+
+collectOuters :: IsIn -> Bag -> [Bag]
+collectOuters isIn bag = processOuters $ M.lookup bag isIn where
+    processOuters Nothing = [bag] 
+    processOuters (Just outers) = (foldl (++) [] $ map (collectOuters isIn) outers) ++ [bag] 
+
+part1 :: Bags -> Integer
+part1 bags = (length outerBags) - 1 where
+    outerBags = nub $ collectOuters bags. isIn "shiny gold"
+        
+part2 :: Bags -> Integer
+part2 bags = M.size bags.contains 
