@@ -13,16 +13,16 @@ module Day20 where
 
 import Prelude
 
-import Data.List (init, sum, product)
+import Data.List (init)
 import Data.String (lines)
 import Data.Binary (toStr)
 
-input :: String -> [Integer]
-input filename = map read contents where
+input :: String -> [String]
+input filename = contents where
     contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
 
-part1 :: [Integer] -> Integer
-part1 is = sum is 
+part1 :: [String] -> Integer
+part1 is = length is 
 
-part2 :: [Integer] -> Integer
-part2 is = product is
+part2 :: [String] -> Integer
+part2 is = length is
