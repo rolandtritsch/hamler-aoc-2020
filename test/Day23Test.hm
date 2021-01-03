@@ -6,7 +6,7 @@ import Test.QuickCheck (TestGroup(..), TestResult, quickCheck1)
 
 import Day23 as D23
 
-shouldBe :: (String -> Integer) -> String -> Integer -> Integer -> Boolean
+shouldBe :: (D23.State -> Integer) -> D23.State -> Integer -> Integer -> Boolean
 shouldBe f is n _ = f is == n
 
 test :: TestGroup (Integer -> IO TestResult)

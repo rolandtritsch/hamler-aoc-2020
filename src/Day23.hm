@@ -13,16 +13,30 @@ module Day23 where
 
 import Prelude
 
-import Data.List (init)
+import Data.List (init, slice)
 import Data.String (lines)
 import Data.Binary (toStr)
+import Data.Char (digitToInt)
 
-input :: String -> String
-input filename = head contents where
+type State = {
+    current :: Integer,
+    cubs :: [Integer],
+    pickup :: [Integer],
+    destination :: Integer
+}
+
+input :: String -> State
+input filename = {current = 0, cubs = cubs, pickup = [], destination = 0} where
+    cubs = map digitToInt $ head contents
     contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
 
-part1 :: String -> Integer
-part1 is = length is 
+action1 :: State -> State
+action1 state = {current = state.current, cubs = cubs, pickup = pickup, destination = state.destination} where
+    pickup = slice state.current (state.current+3) state.cubs
+    cubs = drop state.current $ drop state.current $ drop state.current state.cubs 
 
-part2 :: String -> Integer
-part2 is = length is
+part1 :: State -> Integer
+part1 state = length state.cubs 
+
+part2 :: State -> Integer
+part2 state = length state.cubs
