@@ -26,8 +26,9 @@ import Day20Test as D20
 import Day21Test as D21
 import Day22Test as D22
 import Day23Test as D23
--}
 import Day24Test as D24
+-}
+import Day25Test as D25
 
 import Test.QuickCheck (TestGroup(..), TestResult, runTest)
 
@@ -58,8 +59,9 @@ test = TxG "AoC" [
     D21.test,
     D22.test,
     D23.test,
+    D24.test,
 -}
-    D24.test
+    D25.test
 ]
 
 main :: IO ()

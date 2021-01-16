@@ -1,0 +1,65 @@
+{-|
+Problem: <https://adventofcode.com/2020/day/25>
+
+Solution:
+
+General - Interesting one. Struggled to read this right and get all of
+the numbers/concepts (value, subject, key, ...) right. At least the
+parsing of the input is easy ...
+
+Main insight was that you can calculate the next value/subject from the
+previous one with a loop size of 1. And this will obviously speed up the
+brute forcing of the loop size.
+
+Part 1 - Brute force the card loop size and use it to calculate the door
+encryption key.
+
+Part 2 - Product of all numbers.
+-}
+module Day25 where
+
+import Prelude
+
+import Data.List (init, (!!))
+import Data.String (lines)
+import Data.Binary (toStr)
+
+type Key = Integer
+type Keys = (Key, Key)
+
+-- | read the input file.
+input :: String -> Keys
+input filename = (contents !! 0, contents !! 1)
+  where
+    contents = map read $ init $ lines $ toStr $ unsafePerformIO $ readFile filename
+
+initialValue :: Integer
+initialValue = 1
+
+superSecretSubject :: Integer
+superSecretSubject = 7
+
+superSecretSeed :: Integer
+superSecretSeed = 20201227
+
+-- | transform a subject number.
+transform :: Integer -> Integer -> Integer -> Integer
+transform 0 value _subject = value 
+transform loopSize value subject = transform (loopSize - 1) value' subject
+  where
+    value' = (value * subject) % superSecretSeed
+
+-- | brute force the public key to get the loopSize.
+brute :: Integer -> Integer -> Key -> Integer
+brute loopSize value key
+  | transform 1 value superSecretSubject == key = loopSize
+  | otherwise = brute (loopSize + 1) (transform 1 value superSecretSubject) key
+
+-- | solve part1.
+part1 :: Keys -> Integer
+part1 (cardPK, doorPK) = transform cardLoopSize initialValue doorPK
+  where
+    cardLoopSize = brute 1 initialValue cardPK
+
+part2 :: Keys -> Integer
+part2 (cardPK, _doorPK) = cardPK
