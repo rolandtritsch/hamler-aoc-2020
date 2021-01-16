@@ -5,6 +5,19 @@ Solution:
 
 General - ???
 
+Solution: 
+
+General - Read careful. There is nothing difficult about this.
+if you follow the instructions and implement the actions correctly
+you will find/get the solution.
+
+One small trick/simplification. The position of current does not matter.
+And that means we can *just* reorder the list in/with the last action
+of every move/cycke to make current the first element of the list.
+
+The alternative was to use a lazy, circular linked-list, but then the
+cut/paste becomes interesting.
+
 Part 1 - ???
 
 Part 2 - ???
@@ -13,30 +26,74 @@ module Day23 where
 
 import Prelude
 
-import Data.List (init, slice)
-import Data.String (lines)
+import Data.List (init, (!!), find, maximum, elem)
+import Data.String (lines, join)
 import Data.Binary (toStr)
 import Data.Char (digitToInt)
+import Data.Maybe (fromJust)
 
 type State = {
-    current :: Integer,
-    cubs :: [Integer],
+    moves :: Integer,
+    cups :: [Integer],
     pickup :: [Integer],
     destination :: Integer
 }
 
 input :: String -> State
-input filename = {current = 0, cubs = cubs, pickup = [], destination = 0} where
-    cubs = map digitToInt $ head contents
+input filename = {moves = moves, cups = cups, pickup = [], destination = 0} where
     contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+    moves = read $ contents !! 0
+    cups = map digitToInt $ contents !! 1
 
-action1 :: State -> State
-action1 state = {current = state.current, cubs = cubs, pickup = pickup, destination = state.destination} where
-    pickup = slice state.current (state.current+3) state.cubs
-    cubs = drop state.current $ drop state.current $ drop state.current state.cubs 
+removeCups :: State -> State
+removeCups state = {moves = state.moves, cups = cups,  pickup = pickup, destination = state.destination} where
+    (head', rest') = splitAt 1 state.cups
+    pickup = take 3 rest'
+    cups = head' ++ (drop 3 rest')
+
+findIndex :: forall a. (a -> Bool) -> [a] -> Maybe Integer
+findIndex isMatch list = go 0 list where
+    go _ [] = Nothing
+    go i [e|es]
+      | isMatch e = Just i
+      | otherwise = go (i+1) es 
+
+selectDestination :: State -> State
+selectDestination state = {moves = state.moves, cups = state.cups, pickup = state.pickup, destination = destination} where
+    possibleDestinations = (reverse [0 .. ((head state.cups) - 1)]) ++ [maximum state.cups]
+    destinationLabel = fromJust $ find (\pd -> elem pd state.cups) possibleDestinations
+    destination = fromJust $ findIndex (\l -> l == destinationLabel) state.cups
+
+placePickupCups :: State -> State
+placePickupCups state = {moves = state.moves, cups = cups,  pickup = [], destination = state.destination} where
+    (head', rest') = splitAt (state.destination + 1) state.cups
+    cups = head' ++ state.pickup ++ rest'
+    
+newCurrentCup :: State -> State
+newCurrentCup state = {moves = moves,  cups = cups, pickup = [],  destination = 0} where
+    moves = state.moves - 1
+    cups = tail state.cups ++ [head state.cups]
+
+actions :: State -> State
+actions state = newCurrentCup $ placePickupCups $ selectDestination $ removeCups state
+
+executeMoves :: State -> State
+executeMoves state
+  | state.moves == 0 = state
+  | otherwise = executeMoves $ actions state
+
+collect :: Integer -> [Integer] -> [Integer]
+collect label cups' = rest' ++ (init head')
+  where
+    where' = fromJust $ findIndex (\c -> c == label) cups'
+    (head', rest') = splitAt (where' + 1) cups'
+
+ints2Int :: [Int] -> Int
+ints2Int ints = read $ join (map show ints) ""
 
 part1 :: State -> Integer
-part1 state = length state.cubs 
+part1 state = ints2Int $ collect 1 $ done.cups where
+    done = executeMoves state
 
 part2 :: State -> Integer
-part2 state = length state.cubs
+part2 state = length state.cups
