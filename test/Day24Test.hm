@@ -1,0 +1,25 @@
+module Day24Test where
+
+import Prelude
+
+import Test.QuickCheck (TestGroup(..), TestResult, quickCheck1)
+
+import Day24 as D24
+
+shouldBe :: (D24.Tiles -> Integer) -> D24.Tiles -> Integer -> Integer -> Boolean
+shouldBe f is n _ = f is == n
+
+test :: TestGroup (Integer -> IO TestResult)
+test = TxG "Day24" [
+    TxG "Part1" [
+        Exe [
+            quickCheck1 "shouldBe 15" (shouldBe D24.part1 (D24.input "./input/Day24p1test.txt") 20),
+            quickCheck1 "shouldBe 15" (shouldBe D24.part1 (D24.input "./input/Day24p1.txt") 315)
+        ]
+    ],
+    TxG "Part2" [ 
+        Exe [
+            quickCheck1 "shouldBe 120" (shouldBe D24.part2 (D24.input "./input/Day24p1.txt") 315)
+        ]
+    ]
+]
