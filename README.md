@@ -1,5 +1,7 @@
 # Advent of Code 2020 (Hamler Edition)
 
+![AoC](https://github.com/rolandtritsch/hamler-aoc-2020/blob/master/images/aoc-day25.png?raw=true)
+
 To make this work you need to ...
 
 * make sure you have erlang/otp >= 23 installed configured
