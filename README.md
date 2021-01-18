@@ -1,6 +1,6 @@
 # Advent of Code 2020 (Hamler Edition)
 
-![AoC](https://github.com/rolandtritsch/hamler-aoc-2020/blob/master/images/aoc-day25.png?raw=true)
+![AoC](https://github.com/rolandtritsch/hamler-aoc-2020/blob/trunk/images/aoc-day25.png?raw=true)
 
 To make this work you need to ...
 
