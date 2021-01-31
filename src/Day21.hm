@@ -76,13 +76,23 @@ removeIngredientsBySingleton foods = diffMapValues singletons foods where
 
 part1 :: Foods -> Integer
 part1 foods = length safeToEat where
-    safeToEat = filter (\i -> elem i incredientsFreeOfAllergens) allIncredients
-    allIncredients = flatten $ nub $ flatten $ M.values foods
-    incredientsFreeOfAllergens = nub $ flatten $ flatten $ M.values foodsFreeOfAllergens
     foodsFreeOfAllergens = go foods false where
-      go foods' true = foods'
-      go foods' false = go foods'' (foods' == foods'') where
-          foods'' = removeIngredientsBySingleton $ removeIngredientsByIntersection foods' 
+        go foods' true = foods'
+        go foods' false = go foods'' (foods' == foods'') where
+            foods'' = removeIngredientsBySingleton $ removeIngredientsByIntersection foods' 
+    incredientsFreeOfAllergens = nub $ flatten $ flatten $ M.values foodsFreeOfAllergens
+    allIncredients = flatten $ nub $ flatten $ M.values foods
+    safeToEat = filter (\i -> elem i incredientsFreeOfAllergens) allIncredients
+
+part1' :: Foods -> Integer
+part1' foods = length safeToEat where
+    (foodsFreeOfAllergens, _) = go foods false 0 where
+        go foods' true c = (foods', c)
+        go foods' false c = go foods'' (foods' == foods'') (c + 1) where
+            foods'' = removeIngredientsBySingleton $ removeIngredientsByIntersection foods' 
+    incredientsFreeOfAllergens = nub $ flatten $ flatten $ M.values foodsFreeOfAllergens
+    allIncredients = flatten $ nub $ flatten $ M.values foods
+    safeToEat = filter (\i -> elem i incredientsFreeOfAllergens) allIncredients
 
 part2 :: Foods -> Integer
 part2 foods = M.size foods
