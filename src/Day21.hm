@@ -94,5 +94,15 @@ part1' foods = length safeToEat where
     allIncredients = flatten $ nub $ flatten $ M.values foods
     safeToEat = filter (\i -> elem i incredientsFreeOfAllergens) allIncredients
 
+part1'' :: Foods -> Integer
+part1'' foods = length safeToEat where
+    safeToEat = filter (\i -> elem i incredientsFreeOfAllergens) allIncredients
+    allIncredients = flatten $ nub $ flatten $ M.values foods
+    incredientsFreeOfAllergens = nub $ flatten $ flatten $ M.values foodsFreeOfAllergens
+    foodsFreeOfAllergens = go false foods where
+      go true foods' = foods'
+      go false foods' = go (foods' == foods'') foods'' where
+          foods'' = removeIngredientsBySingleton $ removeIngredientsByIntersection foods' 
+
 part2 :: Foods -> Integer
 part2 foods = M.size foods
