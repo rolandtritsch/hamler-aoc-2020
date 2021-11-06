@@ -4,10 +4,10 @@
 
 To make this work you need to ...
 
-* make sure you have erlang/otp >= 23 installed configured
-(through [asdf](https://github.com/asdf-vm/asdf) (or comparable))
-* install [hamler](https://github.com/hamler-lang)
-  * Note: for this to work you need to build from the repo (or need at least hamler 0.23 (which was not published at the time, when this work was done)). 
+* make sure you have erlang/otp >= 23 installed configured (through [asdf](https://github.com/asdf-vm/asdf) (or comparable))
+  * `asdf plugin add erlang && asdf install erlang 23.3 && asdf global erlang 23.3`
+* install [hamler](https://github.com/hamler-lang/hamler) using `asdf`
+  * `asdf plugin add hamler && asdf install hamler 0.4 && asdf global hamler 0.4`
 * clone the repo
 * run `hamler test`
 * run `./scripts/genMain.sh > ./src/Main.hm; hamler build && hamler run | grep -v "Force eval"` to generate and run the measurements
